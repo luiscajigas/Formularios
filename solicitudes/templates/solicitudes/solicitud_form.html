@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Editar Solicitud - {{ form.instance.nombre }}
+    {% else %}
+        Nueva Solicitud
+    {% endif %} - Taller 2 Django
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    {% if form.instance.pk %}
+                        <i class="fas fa-edit me-2"></i>
+                        Editar Solicitud: {{ form.instance.nombre }}
+                    {% else %}
+                        <i class="fas fa-plus me-2"></i>
+                        Nueva Solicitud
+                    {% endif %}
+                </h2>
+            </div>
+            
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                            <i class="fas fa-tag me-1"></i>
+                            {{ form.nombre.label }} *
+                        </label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.nombre.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if form.nombre.help_text %}
+                            <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>
+                            {{ form.descripcion.label }} *
+                        </label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.descripcion.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if form.descripcion.help_text %}
+                            <small class="form-text text-muted">{{ form.descripcion.help_text }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.estado.id_for_label }}" class="form-label">
+                                    <i class="fas fa-flag me-1"></i>
+                                    {{ form.estado.label }} *
+                                </label>
+                                {{ form.estado }}
+                                {% if form.estado.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.estado.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.prioridad.id_for_label }}" class="form-label">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ form.prioridad.label }} *
+                                </label>
+                                {{ form.prioridad }}
+                                {% if form.prioridad.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.prioridad.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if form.fecha_limite %}
+                    <div class="mb-3">
+                        <label for="{{ form.fecha_limite.id_for_label }}" class="form-label">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ form.fecha_limite.label }}
+                        </label>
+                        {{ form.fecha_limite }}
+                        {% if form.fecha_limite.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.fecha_limite.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if form.fecha_limite.help_text %}
+                            <small class="form-text text-muted">{{ form.fecha_limite.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if form.asignado_a %}
+                    <div class="mb-3">
+                        <label for="{{ form.asignado_a.id_for_label }}" class="form-label">
+                            <i class="fas fa-user me-1"></i>
+                            {{ form.asignado_a.label }}
+                        </label>
+                        {{ form.asignado_a }}
+                        {% if form.asignado_a.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.asignado_a.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between pt-3">
+                        <a href="{% url 'solicitud_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Cancelar
+                        </a>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if form.instance.pk %}
+                                Actualizar Solicitud
+                            {% else %}
+                                Crear Solicitud
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if form.instance.pk %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información Adicional
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <strong>Fecha de Creación:</strong><br>
+                        <span class="text-muted">{{ form.instance.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <strong>Última Actualización:</strong><br>
+                        <span class="text-muted">{{ form.instance.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(function(input) {
+        if (!input.classList.contains('btn')) {
+            input.classList.add('form-control');
+        }
+    });
+
+    // Validación del lado del cliente
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Validar campos requeridos
+        const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos.');
+        }
+    });
+
+    document.querySelectorAll('input, select, textarea').forEach(function(field) {
+        field.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+});
+</script>
+{% endblock %}

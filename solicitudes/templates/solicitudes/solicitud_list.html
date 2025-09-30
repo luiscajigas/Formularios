@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Solicitudes - Taller 2 Django{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">
+                <i class="fas fa-clipboard-list me-2"></i>
+                Lista de Solicitudes
+            </h1>
+            <a href="{% url 'solicitud_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Nueva Solicitud
+            </a>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Buscar</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               value="{{ request.GET.search }}" placeholder="Nombre o descripción...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado">
+                            <option value="">Todos los estados</option>
+                            <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                            <option value="en_proceso" {% if request.GET.estado == 'en_proceso' %}selected{% endif %}>En Proceso</option>
+                            <option value="completada" {% if request.GET.estado == 'completada' %}selected{% endif %}>Completada</option>
+                            <option value="cancelada" {% if request.GET.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="prioridad" class="form-label">Prioridad</label>
+                        <select class="form-select" id="prioridad" name="prioridad">
+                            <option value="">Todas las prioridades</option>
+                            <option value="baja" {% if request.GET.prioridad == 'baja' %}selected{% endif %}>Baja</option>
+                            <option value="media" {% if request.GET.prioridad == 'media' %}selected{% endif %}>Media</option>
+                            <option value="alta" {% if request.GET.prioridad == 'alta' %}selected{% endif %}>Alta</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <a href="{% url 'solicitud_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Limpiar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if solicitudes %}
+            <div class="row">
+                {% for solicitud in solicitudes %}
+                    <div class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card h-100 card-hover">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">{{ solicitud.nombre }}</h5>
+                                {% if solicitud.estado == 'pendiente' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>Pendiente
+                                    </span>
+                                {% elif solicitud.estado == 'en_proceso' %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-spinner me-1"></i>En Proceso
+                                    </span>
+                                {% elif solicitud.estado == 'completada' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Completado
+                                    </span>
+                                {% elif solicitud.estado == 'cancelada' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times me-1"></i>Cancelada
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-body">
+                                <p class="card-text">{{ solicitud.descripcion|truncatewords:15 }}</p>
+                                
+                                <div class="row small text-muted mb-3">
+                                    <div class="col-6">
+                                        <strong>Prioridad:</strong>
+                                        {% if solicitud.prioridad == 'alta' %}
+                                            <span class="text-danger">
+                                                <i class="fas fa-exclamation-triangle"></i> Alta
+                                            </span>
+                                        {% elif solicitud.prioridad == 'media' %}
+                                            <span class="text-warning">
+                                                <i class="fas fa-minus"></i> Media
+                                            </span>
+                                        {% else %}
+                                            <span class="text-success">
+                                                <i class="fas fa-arrow-down"></i> Baja
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>Creada:</strong> {{ solicitud.fecha_creacion|date:"d/m/Y" }}
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'solicitud_detail' solicitud.pk %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Ver
+                                    </a>
+                                    <div>
+                                        <a href="{% url 'solicitud_update' solicitud.pk %}" class="btn btn-outline-warning btn-sm">
+                                            <i class="fas fa-edit me-1"></i>Editar
+                                        </a>
+                                        <a href="{% url 'solicitud_delete' solicitud.pk %}" class="btn btn-outline-danger btn-sm ms-1"
+                                           onclick="return confirm('¿Estás seguro de que deseas eliminar esta solicitud?')">
+                                            <i class="fas fa-trash me-1"></i>Eliminar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Paginación -->
+            {% if is_paginated %}
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}{% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h3 class="text-muted">No hay solicitudes</h3>
+                <p class="text-muted">No se encontraron solicitudes que coincidan con los criterios de búsqueda.</p>
+                <a href="{% url 'solicitud_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    Crear primera solicitud
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

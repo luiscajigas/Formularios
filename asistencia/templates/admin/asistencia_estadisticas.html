@@ -1,0 +1,17 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<div>
+  <p>Total registros: {{ total_registros }}</p>
+  <p>Presentes: {{ total_presentes }}</p>
+  <p>Ausentes: {{ total_ausentes }}</p>
+  <p>Porcentaje de asistencia: {{ porcentaje_asistencia }}%</p>
+</div>
+<h2>Top personas activas</h2>
+<ul>
+  {% for p in personas_activas %}
+    <li>{{ p.nombre_completo }} ({{ p.documento_identidad }}) - {{ p.total }} registros - {{ p.presentes }} presentes</li>
+  {% endfor %}
+</ul>
+{% endblock %}

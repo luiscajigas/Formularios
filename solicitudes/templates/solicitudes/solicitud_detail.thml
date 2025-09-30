@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ solicitud.nombre }} - Detalle de Solicitud{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    {{ solicitud.nombre }}
+                </h2>
+                {% if solicitud.estado == 'pendiente' %}
+                    <span class="badge bg-warning fs-6">
+                        <i class="fas fa-clock me-1"></i>Pendiente
+                    </span>
+                {% elif solicitud.estado == 'en_proceso' %}
+                    <span class="badge bg-info fs-6">
+                        <i class="fas fa-spinner me-1"></i>esta en Proceso
+                    </span>
+                {% elif solicitud.estado == 'completada' %}
+                    <span class="badge bg-success fs-6">
+                        <i class="fas fa-check me-1"></i>Completada
+                    </span>
+                {% elif solicitud.estado == 'cancelada' %}
+                    <span class="badge bg-danger fs-6">
+                        <i class="fas fa-times me-1"></i>Cancelada
+                    </span>
+                {% endif %}
+            </div>
+            
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>
+                        <i class="fas fa-align-left me-2"></i>
+                        Descripción
+                    </h5>
+                    <p class="lead">{{ solicitud.descripcion|linebreaks }}</p>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-sm-6">
+                        <h6>
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Prioridad
+                        </h6>
+                        {% if solicitud.prioridad == 'alta' %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Alta
+                            </span>
+                        {% elif solicitud.prioridad == 'media' %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-minus me-1"></i>Media
+                            </span>
+                        {% else %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-arrow-down me-1"></i>Baja
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if solicitud.fecha_limite %}
+                    <div class="col-sm-6">
+                        <h6>
+                            <i class="fas fa-calendar me-2"></i>
+                            Fecha Límite
+                        </h6>
+                        <p class="mb-0">
+                            {{ solicitud.fecha_limite|date:"d/m/Y" }}
+                            {% if solicitud.fecha_limite < today and solicitud.estado != 'completada' %}
+                                <span class="badge bg-danger ms-2">Vencida</span>
+                            {% elif solicitud.fecha_limite|timeuntil:"days" <= 3 and solicitud.estado != 'completada' %}
+                                <span class="badge bg-warning ms-2">Próxima a vencer</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if solicitud.asignado_a %}
+                <div class="mb-4">
+                    <h6>
+                        <i class="fas fa-user me-2"></i>
+                        Asignado a
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-circle bg-primary text-white me-2">
+                            {{ solicitud.asignado_a.get_full_name|first|default:solicitud.asignado_a.username|first }}
+                        </div>
+                        <div>
+                            <strong>{{ solicitud.asignado_a.get_full_name|default:solicitud.asignado_a.username }}</strong><br>
+                            <small class="text-muted">{{ solicitud.asignado_a.email }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h6>
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            Fecha de Creación
+                        </h6>
+                        <p class="mb-0">{{ solicitud.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                        <h6>
+                            <i class="fas fa-calendar-check me-2"></i>
+                            Última Actualización
+                        </h6>
+                        <p class="mb-0">{{ solicitud.fecha_actualizacion|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{% url 'solicitud_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Volver a la Lista
+                </a>
+                
+                <div>
+                    <a href="{% url 'solicitud_update' solicitud.pk %}" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>
+                        Editar
+                    </a>
+                    
+                    <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-2"></i>
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar con información adicional -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Progreso
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Barra de progreso basada en el estado -->
+                <div class="mb-3">
+                    <label class="form-label">Estado del proyecto</label>
+                    <div class="progress mb-2" style="height: 20px;">
+                        {% if solicitud.estado == 'pendiente' %}
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 25%">25%</div>
+                        {% elif solicitud.estado == 'en_proceso' %}
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 50%">50%</div>
+                        {% elif solicitud.estado == 'completada' %}
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%">100%</div>
+                        {% elif solicitud.estado == 'cancelada' %}
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 0%">Cancelada</div>
+                        {% endif %}
+                    </div>
+                </div>
+            

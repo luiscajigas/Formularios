@@ -1,0 +1,373 @@
+{% extends 'asistencia/base.html' %}
+
+{% block title %}{{ object.nombre_completo }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="content-card fade-in">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-person-circle me-2"></i>
+                Detalles de Asistencia
+            </h1>
+            <p class="page-subtitle">Información completa del registro</p>
+        </div>
+        <div>
+            <a href="{% url 'asistencia:list' %}" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left me-1"></i>
+                Volver
+            </a>
+            <a href="{% url 'asistencia:update' object.pk %}" class="btn btn-warning">
+                <i class="bi bi-pencil me-1"></i>
+                Editar
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Info Card -->
+            <div class="detail-card mb-4">
+                <div class="detail-card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="user-avatar-large me-3">
+                            {{ object.nombre_completo|first|upper }}
+                        </div>
+                        <div>
+                            <h3 class="mb-1">{{ object.nombre_completo }}</h3>
+                            <p class="text-muted mb-0">{{ object.documento_identidad }}</p>
+                        </div>
+                    </div>
+                    <div class="status-badge">
+                        {% if object.presente %}
+                            <span class="badge bg-success fs-6">
+                                <i class="bi bi-check-circle-fill me-1"></i>Presente
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6">
+                                <i class="bi bi-x-circle-fill me-1"></i>Ausente
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="detail-card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-item">
+                                <label class="detail-label">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    Correo Electrónico
+                                </label>
+                                <div class="detail-value">
+                                    <a href="mailto:{{ object.correo_electronico }}" class="text-decoration-none">
+                                        {{ object.correo_electronico }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-item">
+                                <label class="detail-label">
+                                    <i class="bi bi-calendar me-2"></i>
+                                    Fecha de Asistencia
+                                </label>
+                                <div class="detail-value">
+                                    {{ object.fecha_asistencia|date:"l, d F Y" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-item">
+                                <label class="detail-label">
+                                    <i class="bi bi-clock me-2"></i>
+                                    Hora de Ingreso
+                                </label>
+                                <div class="detail-value">
+                                    <span class="badge bg-info fs-6">
+                                        {{ object.hora_ingreso|date:"H:i" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-item">
+                                <label class="detail-label">
+                                    <i class="bi bi-clock-fill me-2"></i>
+                                    Hora de Salida
+                                </label>
+                                <div class="detail-value">
+                                    {% if object.hora_salida %}
+                                        <span class="badge bg-secondary fs-6">
+                                            {{ object.hora_salida|date:"H:i" }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning fs-6">
+                                            <i class="bi bi-clock me-1"></i>En curso
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if object.observaciones %}
+                        <div class="detail-item">
+                            <label class="detail-label">
+                                <i class="bi bi-chat-text me-2"></i>
+                                Observaciones
+                            </label>
+                            <div class="detail-value">
+                                <div class="observation-box">
+                                    {{ object.observaciones|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Time Summary Card -->
+            <div class="detail-card">
+                <div class="detail-card-header">
+                    <h4><i class="bi bi-stopwatch me-2"></i>Resumen de Tiempo</h4>
+                </div>
+                <div class="detail-card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="time-stat">
+                                <div class="time-value">{{ object.fecha_asistencia|date:"H:i" }}</div>
+                                <div class="time-label">Día</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="time-stat">
+                                <div class="time-value">{{ object.hora_ingreso|date:"H:i" }}</div>
+                                <div class="time-label">Entrada</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="time-stat">
+                                <div class="time-value">
+                                    {% if object.hora_salida %}
+                                        {{ object.hora_salida|date:"H:i" }}
+                                    {% else %}
+                                        --:--
+                                    {% endif %}
+                                </div>
+                                <div class="time-label">Salida</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Actions Card -->
+            <div class="detail-card mb-4">
+                <div class="detail-card-header">
+                    <h4><i class="bi bi-gear me-2"></i>Acciones</h4>
+                </div>
+                <div class="detail-card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'asistencia:update' object.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil me-2"></i>
+                            Editar Registro
+                        </a>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete('{{ object.pk }}')">
+                            <i class="bi bi-trash me-2"></i>
+                            Eliminar Registro
+                        </button>
+                        <hr>
+                        <a href="{% url 'asistencia:create' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Nueva Asistencia
+                        </a>
+                        <a href="{% url 'asistencia:list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-list me-2"></i>
+                            Ver Todas
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="detail-card">
+                <div class="detail-card-header">
+                    <h4><i class="bi bi-info-circle me-2"></i>Información del Sistema</h4>
+                </div>
+                <div class="detail-card-body">
+                    <div class="system-info">
+                        <div class="system-info-item">
+                            <span class="system-info-label">ID de Registro:</span>
+                            <span class="system-info-value">{{ object.id }}</span>
+                        </div>
+                        <div class="system-info-item">
+                            <span class="system-info-label">Fecha de Creación:</span>
+                            <span class="system-info-value">{{ object.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="system-info-item">
+                            <span class="system-info-label">Última Modificación:</span>
+                            <span class="system-info-value">{{ object.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar el registro de asistencia de <strong>{{ object.nombre_completo }}</strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Esta acción no se puede deshacer.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.detail-card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-card-body {
+    padding: 1.5rem;
+}
+
+.detail-item {
+    margin-bottom: 1.5rem;
+}
+
+.detail-label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.user-avatar-large {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.status-badge {
+    margin-left: auto;
+}
+
+.observation-box {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.time-stat {
+    padding: 1rem;
+    text-align: center;
+}
+
+.time-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.time-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.system-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.system-info-item:last-child {
+    border-bottom: none;
+}
+
+.system-info-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.system-info-value {
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete(asistenciaId) {
+    const form = document.getElementById('deleteForm');
+    form.action = `{% url 'asistencia:delete' object.pk %}`;
+    
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

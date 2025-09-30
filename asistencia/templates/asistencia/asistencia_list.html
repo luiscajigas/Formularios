@@ -1,0 +1,284 @@
+{% extends 'asistencia/base.html' %}
+
+{% block title %}Lista de Asistencias - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="content-card fade-in">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-list-check me-2"></i>
+                Lista de Asistencias
+            </h1>
+            <p class="page-subtitle">Registro completo de asistencias del sistema</p>
+        </div>
+        <div>
+            <a href="{% url 'asistencia:create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-1"></i>
+                Nueva Asistencia
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ object_list.count }}</div>
+                    <div class="stat-label">Total Registros</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">
+                        {{ object_list|length|add:0 }}{% comment %}Placeholder for present count{% endcomment %}
+                    </div>
+                    <div class="stat-label">Presentes Hoy</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-week"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">
+                        {{ object_list|length|add:0 }}{% comment %}Placeholder for this week{% endcomment %}
+                    </div>
+                    <div class="stat-label">Esta Semana</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-month"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">
+                        {{ object_list|length|add:0 }}{% comment %}Placeholder for this month{% endcomment %}
+                    </div>
+                    <div class="stat-label">Este Mes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre, documento o email...">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select id="statusFilter" class="form-select">
+                <option value="">Todos los estados</option>
+                <option value="presente">Presente</option>
+                <option value="ausente">Ausente</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="date" id="dateFilter" class="form-control">
+        </div>
+    </div>
+
+    {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover" id="asistenciasTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th><i class="bi bi-person me-1"></i>Nombre</th>
+                        <th><i class="bi bi-card-text me-1"></i>Documento</th>
+                        <th><i class="bi bi-envelope me-1"></i>Email</th>
+                        <th><i class="bi bi-calendar me-1"></i>Fecha</th>
+                        <th><i class="bi bi-clock me-1"></i>Ingreso</th>
+                        <th><i class="bi bi-clock-fill me-1"></i>Salida</th>
+                        <th><i class="bi bi-check-circle me-1"></i>Estado</th>
+                        <th><i class="bi bi-gear me-1"></i>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asistencia in object_list %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar me-2">
+                                    {{ asistencia.nombre_completo|first|upper }}
+                                </div>
+                                <strong>{{ asistencia.nombre_completo }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ asistencia.documento_identidad }}</td>
+                        <td>
+                            <a href="mailto:{{ asistencia.correo_electronico }}" class="text-decoration-none">
+                                {{ asistencia.correo_electronico }}
+                            </a>
+                        </td>
+                        <td>{{ asistencia.fecha_asistencia|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge bg-info">
+                                {{ asistencia.hora_ingreso|date:"H:i" }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if asistencia.hora_salida %}
+                                <span class="badge bg-secondary">
+                                    {{ asistencia.hora_salida|date:"H:i" }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning">En curso</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if asistencia.presente %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Presente
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Ausente
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'asistencia:detail' asistencia.pk %}" 
+                                   class="btn btn-sm btn-outline-info" title="Ver detalles">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'asistencia:update' asistencia.pk %}" 
+                                   class="btn btn-sm btn-outline-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        title="Eliminar" onclick="confirmDelete('{{ asistencia.pk }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h3>No hay registros de asistencia</h3>
+            <p>Comience agregando su primera asistencia haciendo clic en el botón "Nueva Asistencia".</p>
+            <a href="{% url 'asistencia:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>
+                Agregar Primera Asistencia
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar este registro de asistencia?</p>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function() {
+    filterTable();
+});
+
+document.getElementById('statusFilter').addEventListener('change', function() {
+    filterTable();
+});
+
+document.getElementById('dateFilter').addEventListener('change', function() {
+    filterTable();
+});
+
+function filterTable() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+    const dateFilter = document.getElementById('dateFilter').value;
+    const rows = document.querySelectorAll('#asistenciasTable tbody tr');
+    
+    rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const document = row.cells[1].textContent.toLowerCase();
+        const email = row.cells[2].textContent.toLowerCase();
+        const date = row.cells[3].textContent;
+        const status = row.cells[6].textContent.toLowerCase();
+        
+        const matchesSearch = searchTerm === '' || 
+            name.includes(searchTerm) || 
+            document.includes(searchTerm) || 
+            email.includes(searchTerm);
+        
+        const matchesStatus = statusFilter === '' || status.includes(statusFilter);
+        
+        let matchesDate = true;
+        if (dateFilter) {
+            const filterDate = new Date(dateFilter);
+            const rowDate = date.split('/').reverse().join('-'); // Convert dd/mm/yyyy to yyyy-mm-dd
+            matchesDate = rowDate === dateFilter;
+        }
+        
+        if (matchesSearch && matchesStatus && matchesDate) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Delete confirmation
+function confirmDelete(asistenciaId) {
+    const form = document.getElementById('deleteForm');
+    form.action = `/asistencia/${asistenciaId}/delete/`; // Update with your actual URL pattern
+    
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+
+// Set today's date as default for date filter
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dateFilter').value = today;
+});
+</script>
+{% endblock %}
