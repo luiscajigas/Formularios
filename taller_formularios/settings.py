@@ -1,17 +1,14 @@
 import os
 from pathlib import Path
-import dj_database_url
 
-BASE_DIR = Path(file).resolve().parent.parent
 
-SECRET_KEY = os.getenv(
-'SECRET_KEY',
-'django-insecure-=0cw%7bsh=c3mw$e&bwp9)60qc43_5@y8k5wi65+srf_fi^jt%'
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+SECRET_KEY = os.environ.get('SECRET_KEY', '@69094(65^bskx7(u5565rn-_(ra+%t3ou-qkhp=(mxx7rt-)6')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+ALLOWED_HOSTS = ['*'] # o reemplaza con tu dominio render.com si quieres más seguridad
 
 INSTALLED_APPS = [
 'django.contrib.admin',
@@ -19,15 +16,13 @@ INSTALLED_APPS = [
 'django.contrib.contenttypes',
 'django.contrib.sessions',
 'django.contrib.messages',
-'whitenoise.runserver_nostatic', # importante para desarrollo con WhiteNoise
 'django.contrib.staticfiles',
-'asistencia',
-'solicitudes',
+# tus apps aquí
 ]
 
 MIDDLEWARE = [
 'django.middleware.security.SecurityMiddleware',
-'whitenoise.middleware.WhiteNoiseMiddleware', # sirve archivos estáticos
+'whitenoise.middleware.WhiteNoiseMiddleware', # <- Importante para servir estáticos en Render
 'django.contrib.sessions.middleware.SessionMiddleware',
 'django.middleware.common.CommonMiddleware',
 'django.middleware.csrf.CsrfViewMiddleware',
@@ -38,14 +33,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'taller_formularios.urls'
 
-
 TEMPLATES = [
 {
 'BACKEND': 'django.template.backends.django.DjangoTemplates',
-'DIRS': [BASE_DIR / 'templates'],
+'DIRS': [BASE_DIR / 'templates'], # si tienes carpetas de plantillas personalizadas
 'APP_DIRS': True,
 'OPTIONS': {
 'context_processors': [
+'django.template.context_processors.debug',
 'django.template.context_processors.request',
 'django.contrib.auth.context_processors.auth',
 'django.contrib.messages.context_processors.messages',
@@ -56,11 +51,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'taller_formularios.wsgi.application'
 
+
 DATABASES = {
-'default': dj_database_url.config(
-default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-conn_max_age=600
-)
+'default': {
+'ENGINE': 'django.db.backends.sqlite3',
+'NAME': BASE_DIR / 'db.sqlite3',
+}
 }
 
 
@@ -76,19 +72,10 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STORAGES = {
-"default": {
-"BACKEND": "django.core.files.storage.FileSystemStorage",
-},
-"staticfiles": {
-"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-},
-}
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
