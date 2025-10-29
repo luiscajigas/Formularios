@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block title %}Eliminar Solicitud - Taller 2
+Django{% endblock %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body text-center">
+        <h3 class="mb-3">¿Está seguro que desea eliminar esta solicitud?</h3>
+        <p class="mb-4">
+          "{{ object.asunto }}" por {{ object.nombre_solicitante }}
+        </p>
+        <form method="post">
+          {% csrf_token %}
+          <a
+            href="{% url 'asistencia:list' %}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="bi bi-house-door me-1"></i> Inicio
+          </a>
+          <a
+            href="{% url 'solicitudes:solicitud_detail' object.pk %}"
+            class="btn btn-secondary ms-2"
+            >Cancelar</a
+          >
+          <button type="submit" class="btn btn-danger ms-2">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

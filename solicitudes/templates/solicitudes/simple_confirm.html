@@ -1,0 +1,10 @@
+{% extends 'asistencia/base.html' %} {% block title %} Solicitud enviada {% endblock %} {% block content %}
+<div class="container py-4 text-center">
+  <h2>Solicitud enviada</h2>
+  <p>{{ mensaje|default:'Su solicitud ha sido enviada exitosamente.' }}</p>
+  <a href="{% url 'solicitudes:solicitud_list' %}" class="btn btn-primary"
+    >Volver a Solicitudes</a
+  >
+</div>
+
+{% endblock %}

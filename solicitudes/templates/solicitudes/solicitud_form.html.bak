@@ -1,10 +1,13 @@
-{% extends 'asistencia/base.html' %} {% block title %} {% if form.instance.pk %}Editar Solicitud{% else %}Nueva Solicitud{% endif %} - Taller 2 Django {% endblock %} {% block content %}
+{% extends 'asistencia/base.html' %} {% block title %} {% if form.instance.pk
+%}Editar Solicitud{% else %}Nueva Solicitud{% endif %} - Taller 2 Django {%
+endblock %} {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
         <h3 class="mb-0">
-          {% if form.instance.pk %}Editar Solicitud{% else %}Nueva Solicitud{% endif %}
+          {% if form.instance.pk %}Editar Solicitud{% else %}Nueva Solicitud{%
+          endif %}
         </h3>
       </div>
       <div class="card-body">

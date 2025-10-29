@@ -17,8 +17,8 @@ INSTALLED_APPS = [
 'django.contrib.sessions',
 'django.contrib.messages',
 'django.contrib.staticfiles',
-'asistencia',
 'solicitudes',
+'asistencia',
 
 ]
 
@@ -81,5 +81,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Permissive mode for solicitudes uploads: when True, skip file size/extension checks
+# and create media directory automatically. Useful for development to "permitir a todo".
+SOLICITUDES_ALLOW_ANY_FILE = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

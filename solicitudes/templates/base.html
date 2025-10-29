@@ -1,93 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Taller 2 Django{% endblock %}</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
-        .navbar-brand {
-            font-weight: bold;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px 0;
-            margin-top: auto;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .container-main {
-            flex: 1;
-        }
-        .card-hover {
-            transition: transform 0.2s;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-        }
+      .navbar-brand {
+        font-weight: bold;
+      }
+      .footer {
+        background-color: #f8f9fa;
+        padding: 20px 0;
+        margin-top: auto;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .container-main {
+        flex: 1;
+      }
+      .card-hover {
+        transition: transform 0.2s;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+      }
     </style>
     {% block extra_css %}{% endblock %}
-</head>
-<body>
+  </head>
+  <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'solicitud_list' %}">
-                <i class="fas fa-clipboard-list me-2"></i>
-                Taller 2 Django
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'solicitud_list' %}">
-                            <i class="fas fa-list me-1"></i>
-                            Solicitudes
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'solicitud_create' %}">
-                            <i class="fas fa-plus me-1"></i>
-                            Nueva Solicitud
-                        </a>
-                    </li>
-                </ul>
-            </div>
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'solicitudes:solicitud_list' %}">
+          <i class="fas fa-clipboard-list me-2"></i>
+          Taller 2 Django
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'solicitudes:solicitud_list' %}">
+                <i class="fas fa-list me-1"></i>
+                Solicitudes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{% url 'solicitudes:solicitud_create' %}"
+              >
+                <i class="fas fa-plus me-1"></i>
+                Nueva Solicitud
+              </a>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
 
     <div class="container-main">
-        <div class="container mt-4">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            {% block content %}{% endblock %}
+      <div class="container mt-4">
+        {% if messages %} {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+          ></button>
         </div>
+        {% endfor %} {% endif %} {% block content %}{% endblock %}
+      </div>
     </div>
 
     <footer class="footer bg-light text-center">
-        <div class="container">
-            <span class="text-muted">
-                &copy; 2024 Taller 2 Django - Sistema de Solicitudes
-            </span>
-        </div>
+      <div class="container">
+        <span class="text-muted">
+          &copy; 2024 Taller 2 Django - Sistema de Solicitudes
+        </span>
+      </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
-</body>
+  </body>
 </html>

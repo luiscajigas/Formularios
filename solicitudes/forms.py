@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Solicitud
+from django.conf import settings
 import re
 
 class SolicitudForm(forms.ModelForm):
@@ -114,6 +115,9 @@ class SolicitudForm(forms.ModelForm):
     
     def clean_archivo_adjunto(self):
         archivo = self.cleaned_data.get('archivo_adjunto')
+        # If permissive uploads are enabled in settings, skip validation here.
+        if getattr(settings, 'SOLICITUDES_ALLOW_ANY_FILE', False):
+            return archivo
         if archivo:
             # Validar tamaño (5MB máximo)
             if archivo.size > 5 * 1024 * 1024:

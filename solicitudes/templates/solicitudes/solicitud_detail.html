@@ -1,0 +1,113 @@
+cd{% extends 'base.html' %} {% block title %}{{ solicitud.nombre_solicitante }} -
+Detalle de Solicitud{% endblock %} {% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h2 class="mb-0">
+          <i class="fas fa-clipboard-list me-2"></i>
+          {{ solicitud.nombre_solicitante }}
+        </h2>
+        <span class="badge bg-secondary"
+          >{{ solicitud.get_tipo_solicitud_display }}</span
+        >
+      </div>
+
+      <div class="card-body">
+        <div class="mb-4">
+          <h5>
+            <i class="fas fa-align-left me-2"></i>
+            Asunto
+          </h5>
+          <p class="lead">{{ solicitud.asunto }}</p>
+        </div>
+
+        <div class="mb-4">
+          <h5>
+            <i class="fas fa-file-alt me-2"></i>
+            Descripción
+          </h5>
+          <p class="mb-0">{{ solicitud.descripcion_detallada|linebreaks }}</p>
+        </div>
+
+        {% if solicitud.archivo_adjunto %}
+        <div class="mb-4">
+          <h6><i class="fas fa-paperclip me-2"></i> Archivo adjunto</h6>
+          <a href="{{ solicitud.archivo_adjunto.url }}" target="_blank"
+            >Descargar archivo</a
+          >
+        </div>
+        {% endif %}
+
+        <div class="row">
+          <div class="col-sm-6">
+            <h6>
+              <i class="fas fa-calendar-plus me-2"></i>
+              Fecha de Creación
+            </h6>
+            <p class="mb-0">{{ solicitud.fecha_creacion|date:"d/m/Y H:i" }}</p>
+          </div>
+
+          <div class="col-sm-6">
+            <h6>
+              <i class="fas fa-calendar-check me-2"></i>
+              Última Actualización
+            </h6>
+            <p class="mb-0">
+              {{ solicitud.fecha_actualizacion|date:"d/m/Y H:i" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer d-flex justify-content-between">
+        <a
+          href="{% url 'solicitudes:solicitud_list' %}"
+          class="btn btn-secondary"
+        >
+          <i class="fas fa-arrow-left me-2"></i>
+          Volver a la Lista
+        </a>
+
+        <div>
+          <a
+            href="{% url 'solicitud_update' solicitud.pk %}"
+            class="btn btn-warning"
+          >
+            <i class="fas fa-edit me-2"></i>
+            Editar
+          </a>
+
+          <a
+            href="{% url 'solicitud_delete' solicitud.pk %}"
+            class="btn btn-danger ms-2"
+          >
+            <i class="fas fa-trash me-2"></i>
+            Eliminar
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <i class="fas fa-user me-2"></i>
+          Contacto
+        </h5>
+      </div>
+      <div class="card-body">
+        <p><strong>Correo:</strong><br />{{ solicitud.correo_electronico }}</p>
+        <p><strong>Teléfono:</strong><br />{{ solicitud.telefono_contacto }}</p>
+        <p>
+          <strong>Documento:</strong><br />{{ solicitud.documento_identidad }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
